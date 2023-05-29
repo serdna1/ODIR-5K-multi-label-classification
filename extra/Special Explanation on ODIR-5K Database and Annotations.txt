@@ -1,0 +1,73 @@
+
+Special Explanation on ODIR-5K Database and Annotations
+
+1. The annotated classification labels are determined by the following rules
+   (1) The classification labels of one patient depends on left and right fundus images and corresponding diagnosis keywords;
+   (2) One patient is classified as normal if and only if both left and right diagnosis keywords are "normal fundus";	 
+   (3) The classification labels are decided by the other fundus image when one of fundus images is marked as "normal fundus";
+   (4) Treat all suspected diseases or abnormalities as diagnosed diseases or abnormalities. 
+
+2. Special words that appeared in diagnostic keywords	
+    (1) The appearance of the two keywords "anterior segment image" and "no fundus image" are not classified into any of the eight categories in this competition.
+       For example, there are two anterior segment images in ODIR-5K database, 1706_left.jpg and 1710_right.jpg. 
+	In this case, the patient's classification labels are only judged by the other fundus image of the same patient.
+	In addition, it is very important to note that the diagnostic keyword for 4580_left.jpg image is "no fundus image".
+	Because this image is actually not the left fundus image of this patient, it is from a rotation of right fundus image.
+	The introduction of these two diagnostic keywords can also be one of the challenges in this competition. 
+   (2) The keywords "lens dust", "optic disk photographically invisible", "low image quality" and "image offset" do not play a decisive role in determining patient's labels.
+
+3. The background of the following images is quite different from the rest ones. They are fundus images uploaded from the hospital. 
+	   We are sure that these images are preprocessed. You can decide by yourself whether or not to train these images in the model. 
+	   These images include
+		2174_right.jpg
+		2175_left.jpg
+		2176_left.jpg
+		2177_left.jpg
+		2177_right.jpg
+		2178_right.jpg
+		2179_left.jpg
+		2179_right.jpg
+		2180_left.jpg
+		2180_right.jpg
+		2181_left.jpg
+		2181_right.jpg
+		2182_left.jpg
+		2182_right.jpg
+		2957_left.jpg
+		2957_right.jpg
+		
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+关于ODIR-5K数据库及标注文件的特别解释
+
+1. 标注文件中的分类标签,由以下规则确定：
+   (1) 在确定病人的分类标签时,是根据左眼和右眼的眼底图像和诊断关键词进行确定;
+   (2) 病人被分类为正常, 当且仅当他的左右眼诊断关键词都为"正常眼底";
+   (3) 当病人的其中一只眼睛的眼底图像为"正常眼底"时,需要根据另一只眼睛的眼底图像来确定该病人的分类标签;
+   (4) 将所有疑似疾病或异常看作确诊疾病或异常.
+
+2. 诊断关键词中的特殊关键词
+   (1) "外眼像"和"无眼底图像"这两个关键词的出现,其分类标签不归为此次竞赛8个类别中的任何一类。
+       例如,数据库中存在两张外眼像,分别1706_left.jpg和1710_right.jpg.这种情况下,根据另一只眼睛的眼底图像对病人的分类标签进行判断.
+	此外,需要关注的是,4580_left.jpg这张图像的诊断关键词为"无眼底图像". 因为这张图像,
+	事实上并不是此病人的左眼眼底图像,而是右眼眼底图像的旋转.这两个诊断关键词所对应图像的引入,也是这个竞赛的难点之一.
+   (2) "镜头污点","视盘不可见","图像质量差"和"图片偏位"这几个关键词，不对图像分类标签的确定起决定性作用。
+
+3. 下列图像的背景不同于其他图像,它们是从医院端上传的眼底图像. 我们确信这些图像是经过预处理的,你可以自主决定是否要将这些图像加入模型的训练集中. 
+	这些图片包括：
+		2174_right.jpg
+		2175_left.jpg
+		2176_left.jpg
+		2177_left.jpg
+		2177_right.jpg
+		2178_right.jpg
+		2179_left.jpg
+		2179_right.jpg
+		2180_left.jpg
+		2180_right.jpg
+		2181_left.jpg
+		2181_right.jpg
+		2182_left.jpg
+		2182_right.jpg
+		2957_left.jpg
+		2957_right.jpg
