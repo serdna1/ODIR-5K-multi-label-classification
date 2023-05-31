@@ -3,15 +3,16 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 import torch
+from torchvision import transforms
 from torch.utils.data import Dataset
+from sklearn.model_selection import train_test_split
 
 class ODIRDataset(Dataset):
-    def __init__(self, images_path, annotations_path, indexes, transform=None):
+    def __init__(self, images_path, df, transform=None, join_images=False):
         self.images_path = images_path
-        self.df = pd.read_excel(annotations_path)
-        self.df = self.df.loc[indexes]
-        self.df = self.df.reset_index(drop=True)
+        self.df = df
         self.transform = transform
+        self.join_images = join_images
         
     def __len__(self):
         return len(self.df)
@@ -29,28 +30,36 @@ class ODIRDataset(Dataset):
         target = target.to_numpy(dtype=np.float32)
         target = torch.tensor(target)
         
+        if self.join_images:
+            pair_img = torch.cat((left_img, right_img), dim=2)
+            return pair_img, target
+        
         return (left_img, right_img), target
 
 # Usage example
 if __name__ == '__main__':
-    data_path = Path('./data')
-    images_path = data_path / 'ocular-disease-recognition-odir5k' / 'ODIR-5K' / 'ODIR-5K' / 'Training Images'
-    annotations_path = data_path / 'ocular-disease-recognition-odir5k' / 'ODIR-5K' / 'ODIR-5K' / 'data.xlsx'
-
-    val_ratio = 0.2
-    val_length = round(val_ratio * len(new_df))
-
-    idxs = list(range(len(odir_df)))
-    np.random.shuffle(idxs)
-    train_idxs = idxs[val_length:]
-    val_idxs = idxs[:val_length]
+    images_path = Path('data/images')
+    annotations_path = Path('data/annotations.xlsx')
 
     transform = transforms.Compose([
         transforms.Resize(size=(512, 512)),
         transforms.ToTensor(),
     ])
+    
+    odir_df = pd.read_excel(annotations_path)
 
-    train_dataset = ODIRDataset(images_path, annotations_path, train_idxs, transform)
-    val_dataset = ODIRDataset(images_path, annotations_path, val_idxs, transform)
+    test_ratio = 0.1
+    val_ratio = 0.2
+
+    label_names = ['A','C','D','G','H','M','N','O']
+    
+    train_df, test_df = train_test_split(odir_df, test_size=test_ratio, random_state=42, stratify=odir_df.loc[:, label_names])
+    train_df, val_df = train_test_split(train_df, test_size=val_ratio, random_state=42, stratify=train_df.loc[:, label_names])
+
+    train_dataset = ODIRDataset(images_path, train_df, transform, join_images=True)
+    val_dataset = ODIRDataset(images_path, val_df, transform, join_images=True)
+    test_dataset = ODIRDataset(images_path, test_df, transform, join_images=True)
+
     print(f'Train dataset lenght: {len(train_dataset)}')
     print(f'Validation dataset lenght: {len(val_dataset)}')
+    print(f'Test dataset lenght: {len(test_dataset)}')
