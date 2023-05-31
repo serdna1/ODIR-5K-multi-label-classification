@@ -10,7 +10,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from datasets import ODIRDataset
 from engine import train
-from utils import save_model
+from utils import save_model, create_writer
 
 def get_args_parser():
     parser = argparse.ArgumentParser(
@@ -63,6 +63,18 @@ def get_args_parser():
         type = int,
         default = 5,
         help = 'Number of training epochs (default: 5).'
+    )
+    parser.add_argument(
+        '--experiment_name',
+        type = str,
+        default = 'experiment_0',
+        help = 'Name of the experiment" (default: experiment_0).'
+    )
+    parser.add_argument(
+        '--extra',
+        type = str,
+        default = None,
+        help = 'Extra info about the experiment (default: None).'
     )
 
     return parser
@@ -126,7 +138,10 @@ if __name__ == '__main__':
                     loss_fn=loss_fn,
                     optimizer=optimizer,
                     epochs=opt.epochs,
-                    device=device)
+                    device=device,
+                    writer=create_writer(experiment_name = opt.experiment_name,
+                                         model_name = 'resnet50',
+                                         extra = opt.extra))
 
     # Save the model
     save_model(model=model,

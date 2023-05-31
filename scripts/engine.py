@@ -76,7 +76,8 @@ def train(model,
           optimizer,
           loss_fn,
           epochs,
-          device):
+          device,
+          writer):
     results = {'train_loss': [],
                'train_kappa': [],
                'train_f1': [],
@@ -92,23 +93,23 @@ def train(model,
     model.to(device)
 
     for epoch in tqdm(range(epochs)):
-        train_loss,
-        train_kappa,
-        train_f1,
-        train_auc,
-        train_final_score = train_step(model=model,
-                                       dataloader=train_dataloader,
-                                       loss_fn=loss_fn,
-                                       optimizer=optimizer,
-                                       device=device)
-        val_loss,
-        val_kappa,
-        val_f1,
-        val_auc,
-        val_final_score = val_step(model=model,
-                                   dataloader=val_dataloader,
-                                   loss_fn=loss_fn,
-                                   device=device)
+        (train_loss,
+         train_kappa,
+         train_f1,
+         train_auc,
+         train_final_score) = train_step(model=model,
+                                         dataloader=train_dataloader,
+                                         loss_fn=loss_fn,
+                                         optimizer=optimizer,
+                                         device=device)
+        (val_loss,
+         val_kappa,
+         val_f1,
+         val_auc,
+         val_final_score) = val_step(model=model,
+                                     dataloader=val_dataloader,
+                                     loss_fn=loss_fn,
+                                     device=device)
 
         print(
             f'Ep: {epoch+1} | '
@@ -134,5 +135,30 @@ def train(model,
         results['val_f1'].append(val_f1)
         results['val_auc'].append(val_auc)
         results['val_final_score'].append(val_final_score)
+
+        # Track experiments with a writer
+        if writer:
+            writer.add_scalars(main_tag='Loss', 
+                               tag_scalar_dict={'train_loss': train_loss,
+                                                'val_loss': val_loss},
+                               global_step=epoch)
+            writer.add_scalars(main_tag='Kappa', 
+                               tag_scalar_dict={'train_kappa': train_kappa,
+                                                'val_kappa': val_kappa}, 
+                               global_step=epoch)
+            writer.add_scalars(main_tag='F1', 
+                               tag_scalar_dict={'train_f1': train_f1,
+                                                'val_f1': val_f1}, 
+                               global_step=epoch)
+            writer.add_scalars(main_tag='AUC', 
+                               tag_scalar_dict={'train_auc': train_auc,
+                                                'val_auc': val_auc}, 
+                               global_step=epoch)
+            writer.add_scalars(main_tag='FINAL', 
+                               tag_scalar_dict={'train_final_score': train_final_score,
+                                                'val_final_score': val_final_score}, 
+                               global_step=epoch)
+
+            writer.close()
 
     return results
