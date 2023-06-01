@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
+import torchvision
 from torchvision import transforms
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
