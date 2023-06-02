@@ -18,8 +18,8 @@ class ODIRDataset(Dataset):
         return len(self.df)
     
     def __getitem__(self, i):
-        left_image_path = self.images_path / self.df.at[i, 'Left-Fundus']
-        right_image_path = self.images_path / self.df.at[i, 'Right-Fundus']
+        left_image_path = f'{self.images_path}/{self.df.at[i, "Left-Fundus"]}'
+        right_image_path = f'{self.images_path}/{self.df.at[i, "Right-Fundus"]}'
         left_img = Image.open(left_image_path)
         right_img = Image.open(right_image_path)
         if self.transform:
