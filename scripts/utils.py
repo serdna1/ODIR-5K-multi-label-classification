@@ -49,3 +49,24 @@ def split_annotations(annotations_path, target_dir_path, test_ratio = 0.1, val_r
         
     train_df.to_excel(target_dir_path / 'train_annotations.xlsx', index = False)
     val_df.to_excel(target_dir_path / 'val_annotations.xlsx', index = False)
+
+def create_annotations_mini(source_path,
+                            target_path,
+                            labels = ['A','C','D','G','H','M','N','O'],
+                            images_per_label = 9999,
+                            seed = 42):
+    df = pd.read_excel(source_path)
+    df = df.loc[:, ['ID','Left-Fundus','Right-Fundus'] + labels]
+    
+    mini_df = pd.DataFrame()
+    for label in labels:
+        n_samples = min( int(df.loc[:, [label]].sum()), images_per_label )
+        label_sample_df = df[(df[label] > 0)].sample(n_samples, random_state=seed)
+        df = df.drop(label_sample_df.index)
+        mini_df = pd.concat([mini_df, label_sample_df])
+    mini_df = mini_df.reset_index(drop=True)
+    
+    Path(target_path).parent.mkdir(parents=True, exist_ok=True)
+    mini_df.to_excel(target_path)
+    
+    return mini_df
