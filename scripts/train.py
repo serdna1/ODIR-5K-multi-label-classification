@@ -42,6 +42,11 @@ def get_args_parser():
         help = 'Path of validation annotations file (default: /kaggle/input/odir-size-512/val_annotations.xlsx).'
     )
     parser.add_argument(
+        '--use_annotations_mini',
+        action = 'store_true',
+        help = 'If set uses a subset of the dataset with only the D, M, and N labels.'
+    )
+    parser.add_argument(
         '--batch_size',
         type = int,
         default = 32,
@@ -98,8 +103,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df, transform, join_images=True)
-    val_dataset = ODIRDataset(opt.images_path, val_df, transform, join_images=True)
+    train_dataset = ODIRDataset(opt.images_path, train_df, transform, join_images=True, mini=opt.use_annotations_mini)
+    val_dataset = ODIRDataset(opt.images_path, val_df, transform, join_images=True, mini=opt.use_annotations_mini)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
@@ -124,7 +129,7 @@ if __name__ == '__main__':
         
     # Recreate the fc layer and seed it to the target device
     input_shape = model.fc.in_features
-    output_shape = 8 # number of labels
+    output_shape = 3 if opt.use_annotations_mini else 8 # number of labels
     model.fc = torch.nn.Linear(input_shape, output_shape).to(device)
 
     # Set loss function and optimizer

@@ -8,11 +8,12 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
 class ODIRDataset(Dataset):
-    def __init__(self, images_path, df, transform=None, join_images=False):
+    def __init__(self, images_path, df, transform=None, join_images=False, mini=False):
         self.images_path = images_path
         self.df = df
         self.transform = transform
         self.join_images = join_images
+        self.mini = mini
         
     def __len__(self):
         return len(self.df)
@@ -26,7 +27,8 @@ class ODIRDataset(Dataset):
             left_img = self.transform(left_img)
             right_img = self.transform(right_img)
         
-        target = self.df.loc[i, ['A','C','D','G','H','M','N','O']]
+        labels = ['D','M','N'] if self.mini else ['A','C','D','G','H','M','N','O']
+        target = self.df.loc[i, labels]
         target = target.to_numpy(dtype=np.float32)
         target = torch.tensor(target)
         
