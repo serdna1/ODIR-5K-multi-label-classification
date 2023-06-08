@@ -12,6 +12,8 @@ from sklearn import metrics
 import numpy as np
 import sys
 import xlrd
+xlrd.xlsx.ensure_elementtree_imported(False, None)
+xlrd.xlsx.Element_has_iter = True
 import csv
 
 # read the ground truth from xlsx file and output case id and eight labels 
