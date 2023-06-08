@@ -8,12 +8,11 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 
 class ODIRDataset(Dataset):
-    def __init__(self, images_path, df, transform=None, join_images=False, mini=False):
+    def __init__(self, images_path, df, transform=None, join_images=False):
         self.images_path = images_path
         self.df = df
         self.transform = transform
         self.join_images = join_images
-        self.mini = mini
         
     def __len__(self):
         return len(self.df)
@@ -27,7 +26,7 @@ class ODIRDataset(Dataset):
             left_img = self.transform(left_img)
             right_img = self.transform(right_img)
         
-        labels = ['D','M','N'] if self.mini else ['A','C','D','G','H','M','N','O']
+        labels = ['A','C','D','G','H','M','N','O']
         target = self.df.loc[i, labels]
         target = target.to_numpy(dtype=np.float32)
         target = torch.tensor(target)
@@ -40,8 +39,8 @@ class ODIRDataset(Dataset):
 
 # Usage example
 if __name__ == '__main__':
-    images_path = Path('data/images')
-    annotations_path = Path('data/annotations.xlsx')
+    images_path = 'data/images'
+    annotations_path = 'data/annotations.xlsx'
 
     transform = transforms.Compose([
         transforms.Resize(size=(512, 512)),
@@ -55,8 +54,8 @@ if __name__ == '__main__':
 
     label_names = ['A','C','D','G','H','M','N','O']
     
-    train_df, test_df = train_test_split(odir_df, test_size=test_ratio, random_state=42, stratify=odir_df.loc[:, label_names])
-    train_df, val_df = train_test_split(train_df, test_size=val_ratio, random_state=42, stratify=train_df.loc[:, label_names])
+    train_df, test_df = train_test_split(odir_df, test_size=test_ratio, random_state=42)
+    train_df, val_df = train_test_split(train_df, test_size=val_ratio, random_state=42)
 
     train_dataset = ODIRDataset(images_path, train_df, transform, join_images=True)
     val_dataset = ODIRDataset(images_path, val_df, transform, join_images=True)
