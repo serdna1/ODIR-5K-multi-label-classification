@@ -40,9 +40,9 @@ def train_step(model,
     return train_loss, kappa, f1, auc, final_score
 
 def val_step(model, 
-              dataloader, 
-              loss_fn,
-              device):
+             dataloader, 
+             loss_fn,
+             device):
     model.eval() 
 
     val_loss = 0
@@ -78,16 +78,17 @@ def train(model,
           epochs,
           device,
           writer):
-    results = {'train_loss': [],
-               'train_kappa': [],
-               'train_f1': [],
-               'train_auc': [],
-               'train_final_score': [],
-               'val_loss': [],
-               'val_kappa': [],
-               'val_f1': [],
-               'val_auc': [],
-               'val_final_score': [],
+    results = {
+        'train_loss': [],
+        'train_kappa': [],
+        'train_f1': [],
+        'train_auc': [],
+        'train_final_score': [],
+        'val_loss': [],
+        'val_kappa': [],
+        'val_f1': [],
+        'val_auc': [],
+        'val_final_score': [],
     }
     
     model.to(device)
