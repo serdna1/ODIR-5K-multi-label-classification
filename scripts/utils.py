@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from models import create_resnet50
 
 def save_model(model,
                target_dir,
@@ -19,6 +20,14 @@ def save_model(model,
   print(f"[INFO] Saving model to: {model_save_path}")
   torch.save(obj=model.state_dict(),
              f=model_save_path)
+  
+def load_model(model_path,
+               device):
+    model = create_resnet50(device)
+
+    model.load_state_dict(torch.load(model_path))
+
+    return model
 
 def create_writer(experiment_name, 
                   model_name, 
