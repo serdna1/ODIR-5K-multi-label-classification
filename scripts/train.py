@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from datasets import ODIRDataset
+from models import create_resnet50
 from engine import train
 from utils import save_model, create_writer
 
@@ -125,18 +126,7 @@ if __name__ == '__main__':
                                 pin_memory=True,
                                 shuffle=False)
     
-    # Import a resnet50 from pytorch
-    weights = torchvision.models.ResNet50_Weights.DEFAULT
-    model = torchvision.models.resnet50(weights=weights).to(device)
-
-    # Freeze all model parameters
-    for param in model.parameters():
-        param.requires_grad = False
-        
-    # Recreate the fc layer and seed it to the target device
-    input_shape = model.fc.in_features
-    output_shape = 3 if opt.use_annotations_mini else 8 # number of labels
-    model.fc = torch.nn.Linear(input_shape, output_shape).to(device)
+    model = create_resnet50(device)
 
     # Set loss function and optimizer
     loss_fn = torch.nn.BCEWithLogitsLoss()
