@@ -86,7 +86,7 @@ def preprocess_images(data_dir,
     Path(target_dir).mkdir(parents=True, exist_ok=True)
 
     image_path_list = list(Path(data_dir).glob("*.jpg"))
-    for image_path in tqdm(image_path_list[:5]):
+    for image_path in tqdm(image_path_list):
         img = Image.open(image_path)
         img = transform(img)
         save_path = f'{target_dir}/{image_path.name}'
