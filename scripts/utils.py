@@ -6,6 +6,8 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from models import create_resnet50
+from PIL import Image
+from tqdm.auto import tqdm
 
 def save_model(model,
                target_dir,
@@ -77,3 +79,15 @@ def create_annotations_mini(source_path,
     mini_df.to_excel(target_path)
     
     return mini_df
+
+def preprocess_images(data_dir,
+                      transform,
+                      target_dir):
+    Path(target_dir).mkdir(parents=True, exist_ok=True)
+
+    image_path_list = list(Path(data_dir).glob("*.jpg"))
+    for image_path in tqdm(image_path_list[:5]):
+        img = Image.open(image_path)
+        img = transform(img)
+        save_path = f'{target_dir}/{image_path.name}'
+        img.save(save_path)
