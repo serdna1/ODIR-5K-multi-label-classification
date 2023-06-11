@@ -3,6 +3,7 @@ import argparse
 import os
 from pathlib import Path
 import torch
+from torch import nn
 from torch.utils.data import DataLoader
 import torchvision
 from torchvision import transforms
@@ -30,6 +31,11 @@ def get_args_parser():
         type = str,
         default = '/kaggle/input/odir-size-512/odir-size-512',
         help = 'Path of ODIR training images (default: /kaggle/input/odir-size-512/odir-size-512).'
+    )
+    parser.add_argument(
+        '--use_normalization',
+        action = 'store_true',
+        help = 'If set the images are normalized the same way the imagenet images where normalized to train the resnet50 used here.'
     )
     parser.add_argument(
         '--train_annotations_path',
@@ -106,7 +112,7 @@ if __name__ == '__main__':
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225])
+                             std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
     ])
 
     # Create datasets
