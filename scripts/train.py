@@ -26,12 +26,6 @@ def get_args_parser():
         help = 'Sets random seed for reproducibility (default: 42).'
     )
     parser.add_argument(
-        '--img_size',
-        type = int,
-        default = 224,
-        help = 'The images will be resized to (img_size, img_size) (default: 224).'
-    )
-    parser.add_argument(
         '--images_path',
         type = str,
         default = '/kaggle/input/odir-size-512/odir-size-512',
@@ -110,7 +104,6 @@ if __name__ == '__main__':
 
     # Create transforms
     transform = transforms.Compose([
-        transforms.Resize((opt.img_size, opt.img_size)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
@@ -120,8 +113,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df, transform, join_images=True)
-    val_dataset = ODIRDataset(opt.images_path, val_df, transform, join_images=True)
+    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform, join_images=True)
+    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform, join_images=True)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
