@@ -13,6 +13,7 @@ from datasets import ODIRDataset
 from models import create_resnet50
 from engine import train
 from utils import save_model, create_writer
+from pytorchtools import EarlyStopping
 
 def get_args_parser():
     parser = argparse.ArgumentParser(
@@ -73,6 +74,12 @@ def get_args_parser():
         help = 'Number of training epochs (default: 5).'
     )
     parser.add_argument(
+        '--patience',
+        type = int,
+        default = 1,
+        help = 'How long to wait after last time validation loss improved (default: 1).'
+    )
+    parser.add_argument(
         '--experiment_name',
         type = str,
         default = 'experiment_0',
@@ -90,6 +97,9 @@ def get_args_parser():
 if __name__ == '__main__':
     opt = get_args_parser().parse_args()
 
+    # Create the outputs directory
+    Path('outputs/').mkdir(parents=True, exist_ok=True)
+    
     # Reproducibility
     np.random.seed(opt.random_seed)
     torch.manual_seed(opt.random_seed)
@@ -110,8 +120,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform, join_images=True)
-    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform, join_images=True)
+    train_dataset = ODIRDataset(opt.images_path, train_df, transform, join_images=True)
+    val_dataset = ODIRDataset(opt.images_path, val_df, transform, join_images=True)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
@@ -133,19 +143,24 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=opt.lr)
     
+    # Initialize the early stopping object
+    stopper = EarlyStopping(patience=opt.patience,
+                            verbose=True,
+                            path=f'./outputs/{opt.experiment_name}_model.pth')
+    
+    # Create a custom SummaryWriter instance
+    writer = create_writer(experiment_name = opt.experiment_name,
+                           model_name = 'resnet50',
+                           extra = opt.extra)
+    
     # Start the training loop
-    results = train(model=model,
-                    train_dataloader=train_dataloader,
-                    val_dataloader=val_dataloader,
-                    loss_fn=loss_fn,
-                    optimizer=optimizer,
-                    epochs=opt.epochs,
-                    device=device,
-                    writer=create_writer(experiment_name = opt.experiment_name,
-                                         model_name = 'resnet50',
-                                         extra = opt.extra))
-
-    # Save the model
-    save_model(model=model,
-               target_dir='./outputs/',
-               model_name=f'{opt.experiment_name}_model.pth')
+    _, results = train(model=model,
+                       train_dataloader=train_dataloader,
+                       val_dataloader=val_dataloader,
+                       loss_fn=loss_fn,
+                       optimizer=optimizer,
+                       epochs=opt.epochs,
+                       stopper=stopper,
+                       device=device,
+                       writer=writer)
+    

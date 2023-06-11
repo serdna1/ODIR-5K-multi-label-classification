@@ -76,6 +76,7 @@ def train(model,
           optimizer,
           loss_fn,
           epochs,
+          stopper,
           device,
           writer):
     results = {
@@ -162,4 +163,15 @@ def train(model,
 
             writer.close()
 
-    return results
+        # stopper needs the validation loss to check if it has decresed, 
+        # and if it has, it will make a checkpoint of the current model
+        stopper(val_loss, model)
+        
+        if stopper.early_stop:
+            print("Early stopping")
+            break
+
+    # load the last checkpoint with the best model
+    model.load_state_dict(torch.load(stopper.path))
+
+    return model, results
