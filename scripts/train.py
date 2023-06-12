@@ -163,3 +163,7 @@ if __name__ == '__main__':
                        device=device,
                        writer=writer)
     
+    # Create a df for the train results and save it to file
+    train_results_df = pd.DataFrame(results)
+    train_results_df.to_excel('outputs/train_results.xlsx')
+    
