@@ -22,9 +22,8 @@ def save_model(model,
   torch.save(obj=model.state_dict(),
              f=model_save_path)
   
-def load_model(model_path,
-               device):
-    model = create_resnet50_dual(device)
+def load_model(model_path):
+    model = create_resnet50_dual()
 
     model.load_state_dict(torch.load(model_path))
 
