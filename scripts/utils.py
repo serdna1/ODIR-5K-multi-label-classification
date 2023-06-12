@@ -1,11 +1,10 @@
 from pathlib import Path
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from datetime import datetime
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from models import create_resnet50
+from models import create_resnet50_dual
 from PIL import Image
 from tqdm.auto import tqdm
 
@@ -25,7 +24,7 @@ def save_model(model,
   
 def load_model(model_path,
                device):
-    model = create_resnet50(device)
+    model = create_resnet50_dual(device)
 
     model.load_state_dict(torch.load(model_path))
 

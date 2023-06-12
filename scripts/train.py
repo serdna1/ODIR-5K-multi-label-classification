@@ -5,15 +5,12 @@ from pathlib import Path
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-import torchvision
 from torchvision import transforms
 import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.model_selection import train_test_split
 from datasets import ODIRDataset
-from models import create_resnet50
+from models import create_resnet50_dual
 from engine import train
-from utils import save_model, create_writer
+from utils import create_writer
 from pytorchtools import EarlyStopping
 
 def get_args_parser():
@@ -119,8 +116,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform, join_images=True)
-    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform, join_images=True)
+    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
@@ -135,7 +132,7 @@ if __name__ == '__main__':
                                 pin_memory=True,
                                 shuffle=False)
     
-    model = create_resnet50(device)
+    model = create_resnet50_dual()
 
     # Set loss function and optimizer
     loss_fn = torch.nn.BCEWithLogitsLoss()
@@ -149,7 +146,7 @@ if __name__ == '__main__':
     
     # Create a custom SummaryWriter instance
     writer = create_writer(experiment_name = opt.experiment_name,
-                           model_name = 'resnet50',
+                           model_name = 'resnet50_dual',
                            extra = opt.extra)
     
     # Start the training loop

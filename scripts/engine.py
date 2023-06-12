@@ -13,10 +13,10 @@ def train_step(model,
     all_y = torch.tensor([], dtype=torch.float32).to(device)
     all_probs = torch.tensor([], dtype=torch.float32).to(device)
 
-    for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to(device), y.to(device)
+    for ((X_left, X_right), y) in dataloader:
+        X_left, X_right, y = X_left.to(device), X_right.to(device), y.to(device)
 
-        logits = model(X)
+        logits = model(X_left, X_right)
         probs = torch.sigmoid(logits)
 
         loss = loss_fn(logits, y)
@@ -50,10 +50,10 @@ def val_step(model,
     all_probs = torch.tensor([], dtype=torch.float32).to(device)
 
     with torch.inference_mode():
-        for batch, (X, y) in enumerate(dataloader):
-            X, y = X.to(device), y.to(device)
+        for ((X_left, X_right), y) in dataloader:
+            X_left, X_right, y = X_left.to(device), X_right.to(device), y.to(device)
 
-            logits = model(X)
+            logits = model(X_left, X_right)
             probs = torch.sigmoid(logits)
 
             loss = loss_fn(logits, y)
