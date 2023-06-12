@@ -1,6 +1,6 @@
 import torch
 from tqdm.auto import tqdm
-from ODIR_evaluation import ODIR_Metrics
+from metrics import compute_challenge_metrics
 
 def train_step(model, 
                dataloader, 
@@ -35,7 +35,7 @@ def train_step(model,
     all_probs = all_probs.detach().cpu().numpy()
     
     train_loss = train_loss / len(dataloader)
-    kappa, f1, auc, final_score = ODIR_Metrics(all_y, all_probs)
+    kappa, f1, auc, final_score = compute_challenge_metrics(all_y, all_probs)
     
     return train_loss, kappa, f1, auc, final_score
 
@@ -66,7 +66,7 @@ def val_step(model,
     all_probs = all_probs.detach().cpu().numpy()
     
     val_loss = val_loss / len(dataloader)
-    kappa, f1, auc, final_score = ODIR_Metrics(all_y, all_probs)
+    kappa, f1, auc, final_score = compute_challenge_metrics(all_y, all_probs)
 
     return val_loss, kappa, f1, auc, final_score
 
