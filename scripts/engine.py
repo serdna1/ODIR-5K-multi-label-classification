@@ -114,7 +114,7 @@ def train(model,
                                      device=device)
 
         print(
-            f'Ep: {epoch+1} | '
+            f'Ep: {epoch} | '
             f't_loss: {train_loss:.4f} | '
             f't_kappa: {train_kappa:.4f} | '
             f't_f1: {train_f1:.4f} | '
