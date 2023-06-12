@@ -30,13 +30,13 @@ def load_model(model_path,
 
     return model
 
-def create_writer(experiment_name, 
-                  model_name, 
+def create_writer(model_name,
+                  experiment_name,  
                   extra):
     if extra:
-        log_dir = os.path.join('..', 'runs', experiment_name, model_name, extra)
+        log_dir = os.path.join('..', 'runs', model_name, experiment_name, extra)
     else:
-        log_dir = os.path.join('..', 'runs', experiment_name, model_name)
+        log_dir = os.path.join('..', 'runs', model_name, experiment_name)
         
     print(f"[INFO] Created SummaryWriter, saving to: {log_dir}...")
     

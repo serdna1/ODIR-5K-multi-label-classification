@@ -142,11 +142,11 @@ if __name__ == '__main__':
     # Initialize the early stopping object
     stopper = EarlyStopping(patience=opt.patience,
                             verbose=True,
-                            path=f'./outputs/{opt.experiment_name}_model.pth')
+                            path=f'./outputs/resnet50_dual_{opt.experiment_name}_model.pth')
     
     # Create a custom SummaryWriter instance
-    writer = create_writer(experiment_name = opt.experiment_name,
-                           model_name = 'resnet50_dual',
+    writer = create_writer(model_name = 'resnet50_dual',
+                           experiment_name = opt.experiment_name,
                            extra = opt.extra)
     
     # Start the training loop
