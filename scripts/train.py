@@ -65,6 +65,12 @@ def get_args_parser():
         help = 'Specifies learning rate for optimizer (default: 1e-3).'
     )
     parser.add_argument(
+        '--momentum',
+        type = float,
+        default = 0.9,
+        help = 'Specifies momentum for optimizer (default: 0.9).'
+    )
+    parser.add_argument(
         '--epochs',
         type = int,
         default = 5,
@@ -136,8 +142,9 @@ if __name__ == '__main__':
 
     # Set loss function and optimizer
     loss_fn = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(),
-                                 lr=opt.lr)
+    optimizer = torch.optim.SGD(model.parameters(),
+                                lr=opt.lr,
+                                momentum=opt.momentum)
     
     # Initialize the early stopping object
     stopper = EarlyStopping(patience=opt.patience,
