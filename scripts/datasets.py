@@ -4,11 +4,10 @@ import torch
 from torch.utils.data import Dataset
 
 class ODIRDataset(Dataset):
-    def __init__(self, images_path, df, transform=None, join_images=False):
+    def __init__(self, images_path, df, transform=None):
         self.images_path = images_path
         self.df = df
         self.transform = transform
-        self.join_images = join_images
         
     def __len__(self):
         return len(self.df)
@@ -26,9 +25,5 @@ class ODIRDataset(Dataset):
         target = self.df.loc[i, labels]
         target = target.to_numpy(dtype=np.float32)
         target = torch.tensor(target)
-        
-        if self.join_images:
-            pair_img = torch.cat((left_img, right_img), dim=2)
-            return pair_img, target
         
         return (left_img, right_img), target
