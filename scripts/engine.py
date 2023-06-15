@@ -68,7 +68,7 @@ def val_step(model,
     val_loss = val_loss / len(dataloader)
     kappa, f1, auc, final_score = compute_challenge_metrics(all_y, all_probs)
 
-    return val_loss, kappa, f1, auc, final_score
+    return val_loss, kappa, f1, auc, final_score, all_y, all_probs
 
 def train(model, 
           train_dataloader, 
@@ -108,10 +108,12 @@ def train(model,
          val_kappa,
          val_f1,
          val_auc,
-         val_final_score) = val_step(model=model,
-                                     dataloader=val_dataloader,
-                                     loss_fn=loss_fn,
-                                     device=device)
+         val_final_score,
+         _,
+         _) = val_step(model=model,
+                       dataloader=val_dataloader,
+                       loss_fn=loss_fn,
+                       device=device)
 
         print(
             f'Ep: {epoch} | '
