@@ -59,7 +59,7 @@ def split_annotations(annotations_path, target_dir_path, test_ratio = 0.1, val_r
 
 def create_annotations_mini(source_path,
                             target_path,
-                            labels = ['A','C','D','G','H','M','N','O'],
+                            labels = ['N','D','G','C','A','H','M','O'],
                             images_per_label = 9999,
                             seed = 42):
     df = pd.read_excel(source_path)

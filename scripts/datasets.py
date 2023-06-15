@@ -21,8 +21,7 @@ class ODIRDataset(Dataset):
             left_img = self.transform(left_img)
             right_img = self.transform(right_img)
         
-        labels = ['A','C','D','G','H','M','N','O']
-        target = self.df.loc[i, labels]
+        target = self.df.loc[i, ['N','D','G','C','A','H','M','O']]
         target = target.to_numpy(dtype=np.float32)
         target = torch.tensor(target)
         
