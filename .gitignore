@@ -1,14 +1,13 @@
 data/images/train/
 data/images/train_224/
 data/images/train_old_roi_64/
+data/images/train_fov_cc_fov_224/
 data/annotations/splits/
 
-scripts/__pycache__/
-
-models/
-
 experiments/runs/
-experiments/experiment_0/data
+experiments/experiment_*/data
+
+scripts/__pycache__/
 
 *prueba*
 *_copy*
