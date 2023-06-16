@@ -18,6 +18,7 @@ def pred_and_plot_image(model,
     
     left_img = Image.open(left_image_path)
     right_img = Image.open(right_image_path)
+    
     if transform:
         left_img = transform(left_img)
         right_img = transform(right_img)
@@ -41,23 +42,23 @@ def pred_and_plot_image(model,
     plt.figure(figsize=(8,4))
     
     plt.subplot(1,2,1)
-    plt.imshow(left_img.squeeze().permute(1, 2, 0))
+    plt.imshow(Image.open(left_image_path))
     plt.title('Left')
     plt.axis(False)
 
     plt.subplot(1,2,2)
-    plt.imshow(right_img.squeeze().permute(1, 2, 0))
+    plt.imshow(Image.open(right_image_path))
     plt.title('Right')
     plt.axis(False)
 
     pred_labels = mlb.inverse_transform(pred_labels.cpu().numpy())
     pred_labels = ', '.join(np.squeeze(pred_labels, axis=0))
-    if ground_truth:
+    if ground_truth is None:
+        plt.suptitle(f'Pred: {pred_labels}')
+    else:
         ground_truth = mlb.inverse_transform(np.expand_dims(ground_truth, axis=0))
         ground_truth = ', '.join(np.squeeze(ground_truth, axis=0))
         plt.suptitle(f'Ground Truth: {ground_truth} | Pred: {pred_labels}')
-    else:
-        plt.suptitle(f'Pred: {pred_labels}')
 
 if __name__ == '__main__':
     model_path = sys.argv[1]
