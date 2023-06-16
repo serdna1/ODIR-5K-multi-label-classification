@@ -121,8 +121,7 @@ if __name__ == '__main__':
 
     if opt.probs_path:
         # Create a df to store the probabilities of each patient of the test dataset
-        probs_df = pd.DataFrame(all_probs, columns=['A','C','D','G','H','M','N','O'])
+        probs_df = pd.DataFrame(all_probs, columns=['N','D','G','C','A','H','M','O'])
         probs_df.insert(0, 'ID', test_df['ID'])
-        probs_df = probs_df.loc[:, ['ID','N','D','G','C','A','H','M','O']]
         probs_df.to_excel(opt.probs_path, index=False)
     
