@@ -11,18 +11,21 @@
 from sklearn import metrics
 import numpy as np
 import sys
-import xlrd
-xlrd.xlsx.ensure_elementtree_imported(False, None)
-xlrd.xlsx.Element_has_iter = True
+# import xlrd
+import pandas as pd # xlrd was replaced by pandas to read the ground_truth file
 import csv
 
-# read the ground truth from xlsx file and output case id and eight labels 
-def importGT(filepath):
-    data = xlrd.open_workbook(filepath)
-    table = data.sheets()[0]
-    data = [ [int(table.row_values(i,0,1)[0])] + table.row_values(i,-8) for i in range(1,table.nrows)]
-    return np.array(data)
+# # read the ground truth from xlsx file and output case id and eight labels 
+# def importGT(filepath):
+#     data = xlrd.open_workbook(filepath)
+#     table = data.sheets()[0]
+#     data = [ [int(table.row_values(i,0,1)[0])] + table.row_values(i,-8) for i in range(1,table.nrows)]
+#     return np.array(data)
 
+# This new importGT uses pandas instead xlrd
+def importGT(filepath):
+    ground_truth_df = pd.read_excel(filepath)
+    return ground_truth_df.to_numpy(dtype=np.float64)
 
 # read the submitted predictions in csv format and output case id and eight labels 
 def importPR(gt_data,filepath):
