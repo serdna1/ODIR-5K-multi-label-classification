@@ -73,8 +73,9 @@ def val_step(model,
 def train(model, 
           train_dataloader, 
           val_dataloader, 
-          optimizer,
           loss_fn,
+          optimizer,
+          scheduler,
           epochs,
           stopper,
           device,
@@ -172,6 +173,10 @@ def train(model,
         if stopper.early_stop:
             print("Early stopping")
             break
+
+        if scheduler is not None:
+            # Update lr for next epoch
+            scheduler.step()
 
     # load the last checkpoint with the best model
     model.load_state_dict(torch.load(stopper.path))

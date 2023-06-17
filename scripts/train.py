@@ -71,6 +71,11 @@ def get_args_parser():
         help = 'Specifies momentum for optimizer (default: 0.9).'
     )
     parser.add_argument(
+        '--use_lr_scheduler',
+        action = 'store_true',
+        help = 'If set a lr scheduler is used.'
+    )
+    parser.add_argument(
         '--epochs',
         type = int,
         default = 5,
@@ -146,6 +151,12 @@ if __name__ == '__main__':
                                 lr=opt.lr,
                                 momentum=opt.momentum)
     
+    if opt.use_lr_scheduler:
+        # Decay lr by a factor of 0.1 every 7 epochs
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+    else:
+        scheduler = None
+    
     # Initialize the early stopping object
     stopper = EarlyStopping(patience=opt.patience,
                             verbose=True,
@@ -162,6 +173,7 @@ if __name__ == '__main__':
                        val_dataloader=val_dataloader,
                        loss_fn=loss_fn,
                        optimizer=optimizer,
+                       scheduler=scheduler,
                        epochs=opt.epochs,
                        stopper=stopper,
                        device=device,
