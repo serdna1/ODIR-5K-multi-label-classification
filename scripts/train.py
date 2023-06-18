@@ -165,8 +165,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform)
-    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform)
+    train_dataset = ODIRDataset(opt.images_path, train_df, transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df, transform)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
