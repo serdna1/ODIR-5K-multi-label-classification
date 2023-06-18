@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import LinearLR
+from torch.optim.lr_scheduler import LinearLR, CyclicLR
 from torchvision import transforms
 import pandas as pd
 from datasets import ODIRDataset
@@ -96,6 +96,24 @@ def get_args_parser():
         help = 'End factor of the linear lr scheduler (default: 0.1).'
     )
     parser.add_argument(
+        '--cyclic_lr_scheduler_base_lr',
+        type = float,
+        default = 0.001,
+        help = 'Initial learning rate which is the lower boundary in the cycle for each parameter group (default: 0.001).'
+    )
+    parser.add_argument(
+        '--cyclic_lr_scheduler_max_lr',
+        type = float,
+        default = 0.1,
+        help = 'Upper learning rate boundaries in the cycle for each parameter group (default: 0.1).'
+    )
+    parser.add_argument(
+        '--cyclic_lr_scheduler_step_size_up',
+        type = int,
+        default = 10,
+        help = 'Number of training iterations in the increasing half of a cycle (default: 10).'
+    )
+    parser.add_argument(
         '--epochs',
         type = int,
         default = 5,
@@ -124,7 +142,7 @@ def get_args_parser():
 
 if __name__ == '__main__':
     opt = get_args_parser().parse_args()
-
+    
     # Create the outputs directory
     Path('outputs/').mkdir(parents=True, exist_ok=True)
     
@@ -147,8 +165,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df, transform)
-    val_dataset = ODIRDataset(opt.images_path, val_df, transform)
+    train_dataset = ODIRDataset(opt.images_path, train_df[:100], transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df[:30], transform)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
@@ -171,12 +189,19 @@ if __name__ == '__main__':
                                 lr=opt.lr,
                                 momentum=opt.momentum)
     
+    # Set lr scheduler
     if opt.lr_scheduler == 'LinearLR':
         # Reduces lr linearly for a defined number of steps
         scheduler = LinearLR(optimizer,
                              start_factor = opt.linear_lr_scheduler_start_factor,
                              end_factor = opt.linear_lr_scheduler_end_factor,
                              total_iters = opt.linear_lr_scheduler_total_iters)
+    elif opt.lr_scheduler == 'CyclicLR':
+        scheduler = CyclicLR(optimizer, 
+                             base_lr = opt.cyclic_lr_scheduler_base_lr,
+                             max_lr = opt.cyclic_lr_scheduler_max_lr,
+                             step_size_up = opt.cyclic_lr_scheduler_step_size_up,
+                             mode = 'triangular2')
     else:
         scheduler = None
     
