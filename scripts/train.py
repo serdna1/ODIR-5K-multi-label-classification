@@ -5,6 +5,7 @@ from pathlib import Path
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+from torch.optim.lr_scheduler import LinearLR
 from torchvision import transforms
 import pandas as pd
 from datasets import ODIRDataset
@@ -71,9 +72,28 @@ def get_args_parser():
         help = 'Specifies momentum for optimizer (default: 0.9).'
     )
     parser.add_argument(
-        '--use_lr_scheduler',
-        action = 'store_true',
-        help = 'If set a lr scheduler is used.'
+        '--lr_scheduler',
+        type = str,
+        default = None,
+        help = 'Learning rate scheduler (default: None)'
+    )
+    parser.add_argument(
+        '--linear_lr_scheduler_total_iters',
+        type = int,
+        default = 50,
+        help = 'Number of steps that the linear lr scheduler decays the learning rate (default: 50).'
+    )
+    parser.add_argument(
+        '--linear_lr_scheduler_start_factor',
+        type = int,
+        default = 1,
+        help = 'Start factor of the linear lr scheduler (default: 1).'
+    )
+    parser.add_argument(
+        '--linear_lr_scheduler_end_factor',
+        type = int,
+        default = 0.1,
+        help = 'End factor of the linear lr scheduler (default: 0.1).'
     )
     parser.add_argument(
         '--epochs',
@@ -151,9 +171,12 @@ if __name__ == '__main__':
                                 lr=opt.lr,
                                 momentum=opt.momentum)
     
-    if opt.use_lr_scheduler:
-        # Decay lr by a factor of 0.1 every 7 epochs
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+    if opt.lr_scheduler == 'LinearLR':
+        # Reduces lr linearly for a defined number of steps
+        scheduler = LinearLR(optimizer,
+                             start_factor = opt.linear_lr_scheduler_start_factor,
+                             end_factor = opt.linear_lr_scheduler_end_factor,
+                             total_iters = opt.linear_lr_scheduler_total_iters)
     else:
         scheduler = None
     
