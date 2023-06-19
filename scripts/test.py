@@ -17,8 +17,8 @@ def get_args_parser():
     parser.add_argument(
         '--model_name',
         type = str,
-        default = 'resnet50_dual_v0',
-        help = 'Model arquitecture for testing (default: resnet50_dual_v0).'
+        default = 'resnet50_dual',
+        help = 'Model arquitecture for testing (default: resnet50_dual).'
     )
     parser.add_argument(
         '--model_path',

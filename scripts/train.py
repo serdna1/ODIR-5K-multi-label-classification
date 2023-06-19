@@ -27,8 +27,8 @@ def get_args_parser():
     parser.add_argument(
         '--model_name',
         type = str,
-        default = 'resnet50_dual_v0',
-        help = 'Model arquitecture for training (default: resnet50_dual_v0).'
+        default = 'resnet50_dual',
+        help = 'Model arquitecture for training (default: resnet50_dual).'
     )
     parser.add_argument(
         '--images_path',
@@ -187,7 +187,7 @@ if __name__ == '__main__':
                                 pin_memory=True,
                                 shuffle=False)
     
-    if opt.model_name == 'resnet50_dual_v0':
+    if opt.model_name == 'resnet50_dual':
         model = create_resnet50_dual()
     elif opt.model_name == 'resnet50_dual_v1':
         model = create_resnet50_dual(version=1)
@@ -220,7 +220,7 @@ if __name__ == '__main__':
                             path=f'./outputs/resnet50_dual_{opt.experiment_name}_model.pth')
     
     # Create a custom SummaryWriter instance
-    writer = create_writer(model_name = 'resnet50_dual',
+    writer = create_writer(model_name = opt.model_name,
                            experiment_name = opt.experiment_name,
                            extra = opt.extra)
     
