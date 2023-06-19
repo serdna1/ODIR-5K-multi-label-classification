@@ -62,8 +62,9 @@ def pred_and_plot_image(model,
 
 if __name__ == '__main__':
     model_path = sys.argv[1]
-    left_image_path = sys.argv[2]
-    right_image_path = sys.argv[3]
+    model_name = sys.argv[2]
+    left_image_path = sys.argv[3]
+    right_image_path = sys.argv[4]
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -71,7 +72,7 @@ if __name__ == '__main__':
                             std=[0.229, 0.224, 0.225])
     ])
 
-    pred_and_plot_image(model=load_model(model_path), 
+    pred_and_plot_image(model=load_model(model_path, model_name), 
                         left_image_path=left_image_path,
                         right_image_path=right_image_path,
                         transform=transform,

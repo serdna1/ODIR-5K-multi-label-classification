@@ -25,6 +25,12 @@ def get_args_parser():
         help = 'Sets random seed for reproducibility (default: 42).'
     )
     parser.add_argument(
+        '--model_name',
+        type = str,
+        default = 'resnet50_dual_v0',
+        help = 'Model arquitecture for training (default: resnet50_dual_v0).'
+    )
+    parser.add_argument(
         '--images_path',
         type = str,
         default = '/kaggle/input/odir-size-512/odir-size-512',
@@ -181,7 +187,10 @@ if __name__ == '__main__':
                                 pin_memory=True,
                                 shuffle=False)
     
-    model = create_resnet50_dual()
+    if opt.model_name == 'resnet50_dual_v0':
+        model = create_resnet50_dual()
+    elif opt.model_name == 'resnet50_dual_v1':
+        model = create_resnet50_dual(version=1)
 
     # Set loss function and optimizer
     loss_fn = torch.nn.BCEWithLogitsLoss()

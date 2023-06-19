@@ -15,6 +15,12 @@ def get_args_parser():
         description = 'Test a model with a dataset.'
     )
     parser.add_argument(
+        '--model_name',
+        type = str,
+        default = 'resnet50_dual_v0',
+        help = 'Model arquitecture for testing (default: resnet50_dual_v0).'
+    )
+    parser.add_argument(
         '--model_path',
         type = str,
         default = 'outputs/resnet50_dual_experiment_0_model.pth',
@@ -72,7 +78,7 @@ if __name__ == '__main__':
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    model = load_model(opt.model_path)
+    model = load_model(opt.model_path, opt.model_name)
     model.to(device)
 
     transform = transforms.Compose([

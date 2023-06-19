@@ -22,8 +22,11 @@ def save_model(model,
   torch.save(obj=model.state_dict(),
              f=model_save_path)
   
-def load_model(model_path):
-    model = create_resnet50_dual()
+def load_model(model_path, model_name='resnet_dual_v0'):
+    if model_name == 'resnet50_dual_v0':
+        model = create_resnet50_dual()
+    elif model_name == 'resnet50_dual_v1':
+        model = create_resnet50_dual(version=1)
 
     model.load_state_dict(torch.load(model_path))
 
