@@ -191,6 +191,8 @@ if __name__ == '__main__':
         model = create_resnet50_dual()
     elif opt.model_name == 'resnet50_dual_v1':
         model = create_resnet50_dual(version=1)
+    elif opt.model_name == 'resnet50_dual_v2':
+        model = create_resnet50_dual(version=2)
 
     # Set loss function and optimizer
     loss_fn = torch.nn.BCEWithLogitsLoss()

@@ -27,6 +27,8 @@ def load_model(model_path, model_name='resnet50_dual'):
         model = create_resnet50_dual()
     elif model_name == 'resnet50_dual_v1':
         model = create_resnet50_dual(version=1)
+    elif model_name == 'resnet50_dual_v2':
+        model = create_resnet50_dual(version=2)
 
     model.load_state_dict(torch.load(model_path))
 

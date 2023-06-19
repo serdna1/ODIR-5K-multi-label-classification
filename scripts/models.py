@@ -30,6 +30,26 @@ class NCNV1(nn.Module):
         x = self.classifier(x_cat)
         
         return x
+    
+class NCNV2(nn.Module):
+    def __init__(self, backbone, classifier_in_shape, classifier_out_shape):
+        super(NCNV2, self).__init__()
+        self.backbone = backbone
+        self.classifier =  nn.Sequential(nn.Linear(classifier_in_shape*2, 128),
+                                         nn.ReLU(),
+                                         nn.Dropout(p=0.5),
+                                         nn.Linear(128, 64),
+                                         nn.ReLU(),
+                                         nn.Dropout(p=0.5),
+                                         nn.Linear(64, classifier_out_shape))
+    
+    def forward(self, x_left, x_right):
+        x_left = self.backbone(x_left)
+        x_right = self.backbone(x_right)
+        x_cat = torch.cat((x_left, x_right), dim=1)
+        x = self.classifier(x_cat)
+        
+        return x
 
 def create_resnet50_dual(version=0):
     # Import a resnet50 from pytorch
@@ -57,6 +77,11 @@ def create_resnet50_dual(version=0):
                       classifier_in_shape=classifier_in_shape,
                       classifier_out_shape=8)
         model.name = 'resnet50_dual_v1'
+    elif version == 2:
+        model = NCNV2(backbone=backbone,
+                      classifier_in_shape=classifier_in_shape,
+                      classifier_out_shape=8)
+        model.name = 'resnet50_dual_v2'
 
     print(f"[INFO] Created new {model.name} model.")
 
