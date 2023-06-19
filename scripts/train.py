@@ -37,6 +37,11 @@ def get_args_parser():
         help = 'Path of ODIR training images (default: /kaggle/input/odir-size-512/odir-size-512).'
     )
     parser.add_argument(
+        '--use_data_augmentation',
+        action = 'store_true',
+        help = 'If set augment training data.'
+    )
+    parser.add_argument(
         '--use_normalization',
         action = 'store_true',
         help = 'If set the images are normalized the same way the imagenet images where normalized to train the resnet50 used here.'
@@ -160,8 +165,26 @@ if __name__ == '__main__':
     # Setup target device
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    # Augment data
+    if opt.use_data_augmentation:
+        augmentations = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomVerticalFlip(p=0.5),
+            transforms.RandomRotation(degrees=30),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)
+        ])
+    else:
+        augmentations = nn.Identity()
+    
     # Create transforms
-    transform = transforms.Compose([
+    train_transform = transforms.Compose([
+        augmentations,
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
+    ])
+
+    val_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
@@ -171,8 +194,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df, transform)
-    val_dataset = ODIRDataset(opt.images_path, val_df, transform)
+    train_dataset = ODIRDataset(opt.images_path, train_df, train_transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df, val_transform)
 
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
