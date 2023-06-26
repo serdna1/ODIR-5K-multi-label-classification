@@ -35,7 +35,7 @@ def pred_and_plot_image(model,
         pred_labels = probs>0.5
     
     # MultiLabelBinarazer can convert binary labels in label names and viceversa
-    # For example --> possible labels: ['bird','car','plane']; mlb.inverse_transform([[1,0,1]]): [('car', 'plane')]
+    # For example --> possible labels: ['bird','car','plane']; mlb.inverse_transform([[1,0,1]]): [('bird', 'plane')]
     mlb = MultiLabelBinarizer(classes=label_names) # The classes atribute is for setting the label order
     mlb.fit([label_names]) # Feed the labels to the object
 
@@ -53,12 +53,15 @@ def pred_and_plot_image(model,
 
     pred_labels = mlb.inverse_transform(pred_labels.cpu().numpy())
     pred_labels = ', '.join(np.squeeze(pred_labels, axis=0))
+    probs = probs.cpu().squeeze().numpy()
+    probs = np.around(probs, 2)
+    labels_probs_dict = dict(zip(label_names, probs))
     if ground_truth is None:
-        plt.suptitle(f'Pred: {pred_labels}')
+        plt.suptitle(f'Pred: {pred_labels} | Probs: {labels_probs_dict}')
     else:
         ground_truth = mlb.inverse_transform(np.expand_dims(ground_truth, axis=0))
         ground_truth = ', '.join(np.squeeze(ground_truth, axis=0))
-        plt.suptitle(f'Ground Truth: {ground_truth} | Pred: {pred_labels}')
+        plt.suptitle(f'Ground Truth: {ground_truth} | Pred: {pred_labels} | Probs: {labels_probs_dict}')
 
 if __name__ == '__main__':
     model_path = sys.argv[1]
