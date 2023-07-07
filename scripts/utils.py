@@ -94,3 +94,17 @@ def preprocess_images(data_dir,
         img = transform(img)
         save_path = f'{target_dir}/{image_path.name}'
         img.save(save_path)
+
+def compute_loss_weights(df):
+    label_names = ['N','D','G','C','A','H','M','O']
+    total = len(df)
+    pos_weight = []
+    for label in label_names:
+        positives = int(df.loc[:, [label]].sum())
+        negatives = total - positives
+        weight = negatives / positives
+        pos_weight.append(weight)
+
+    return torch.tensor(pos_weight)
+
+    

@@ -11,7 +11,7 @@ import pandas as pd
 from datasets import ODIRDataset
 from models import create_resnet50_dual
 from engine import train
-from utils import create_writer
+from utils import create_writer, compute_loss_weights
 from pytorchtools import EarlyStopping
 
 def get_args_parser():
@@ -69,6 +69,11 @@ def get_args_parser():
         type = int,
         default = os.cpu_count(),
         help = 'Number of workers for data loaders (default: os.cpu_count()).'
+    )
+    parser.add_argument(
+        '--use_weighted_loss',
+        action = 'store_true',
+        help = 'If set the loss function uses the pos_weight param to consider the dataset imbalance.'
     )
     parser.add_argument(
         '--lr',
@@ -217,8 +222,15 @@ if __name__ == '__main__':
     elif opt.model_name == 'resnet50_dual_v2':
         model = create_resnet50_dual(version=2)
 
-    # Set loss function and optimizer
-    loss_fn = torch.nn.BCEWithLogitsLoss()
+    # Set loss functions
+    if opt.use_weighted_loss:
+        pos_weight = compute_loss_weights(train_df)
+        train_loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    else:
+        train_loss_fn = torch.nn.BCEWithLogitsLoss()
+    val_loss_fn = torch.nn.BCEWithLogitsLoss()
+
+    # Set optimizer
     optimizer = torch.optim.SGD(model.parameters(),
                                 lr=opt.lr,
                                 momentum=opt.momentum)
@@ -253,7 +265,8 @@ if __name__ == '__main__':
     _, results = train(model=model,
                        train_dataloader=train_dataloader,
                        val_dataloader=val_dataloader,
-                       loss_fn=loss_fn,
+                       train_loss_fn=train_loss_fn,
+                       val_loss_fn=val_loss_fn,
                        optimizer=optimizer,
                        scheduler=scheduler,
                        epochs=opt.epochs,
