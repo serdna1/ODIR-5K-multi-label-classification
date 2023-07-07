@@ -224,7 +224,7 @@ if __name__ == '__main__':
 
     # Set loss functions
     if opt.use_weighted_loss:
-        pos_weight = compute_loss_weights(train_df)
+        pos_weight = compute_loss_weights(train_df).to(device)
         train_loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     else:
         train_loss_fn = torch.nn.BCEWithLogitsLoss()
