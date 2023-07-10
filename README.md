@@ -38,7 +38,7 @@ Cada experimento está contenido en una notebook. Se pueden ejecutar en google c
 - Dónde: [experiment_0.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_0/experiment_0.ipynb)
 - [Experimento 0 en TensorBoard.dev](https://tensorboard.dev/experiment/9hqZ4sEMQDuzrie1yeq5AQ/)
 - Motivación: Al ser el primer experimento se van a listar muchos hyperparametros:
-    - Se usan las imágenes originales con risize a (224, 224). Son [estas](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/data/images/train_224.zip)
+    - Se usan las imágenes originales con resize a (224, 224). Son [estas](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/data/images/train_224.zip)
     - Split 80/20 de las anotaciones de train para obtener train y val datasets.
     - Se normalizan las imágenes con la media y desviación típica de Imagenet.
     - Versión 0 de la resnet dual
@@ -89,7 +89,12 @@ Cada experimento está contenido en una notebook. Se pueden ejecutar en google c
 ### Experimento 10 (aumentar resolución)
 - Dónde: [experiment_10.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_10/experiment_10.ipynb)
 - [Experiment 10 en TensorBoard.dev](https://tensorboard.dev/experiment/jLaSRXS8SdOiblbhPU28jQ/)
-- Se generan nuevas imágenes de entrenamiento con el mismo formato que las del experimento 1, pero esta vez de 512x512 (en vez de 224x224):
+- Motivación: Se generan nuevas imágenes de entrenamiento con el mismo formato que las del experimento 1, pero esta vez de 512x512 (en vez de 224x224):
 - Discusión: El entrenamiento llega más lejos que ningún otro (80 epochs) y se supera el mejor score hasta ahora, pero por muy poco (0.4569 frente a 0.4551). Sorprende más salto en tiempo de entrenamiento. Cabe destacar que es la primera vez que un modelo clasifica AMD (label A), y acierta 2 de 5.
+### Experimento 11 (weighted loss)
+- Dónde: [experiment_11.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_11/experiment_11.ipynb)
+- [Experiment 11 en TensorBoard.dev](https://tensorboard.dev/experiment/90EIVEPpTvSEgQmJi4s81g/)
+- Motivación: Pensando que quizás los malos resultados obtenidos hasta ahora se deban al desbalanceo del dataset, se prueba uno de los varios métodos para tratar con este problema: usar una función de loss basada en pesos.
+- Discusión: Se consiguen mejorar los resultados! --> kappa: 0.3487, f1: 0.4866, AUC: 0.7036, score final: 0.5130. Uno de los mejores experimentos era el 3 y tenía peores resultados --> kappa: 0.2814, f1: 0.3762, AUC: 0.7076, score final: 0.4551. Cabe destacar que, mientras que la precisión empeora un poco, el recall mejora mucho. Esto se puede ver en las probabilidades de los resultados cualitativos, se ve que el modelo arriesga más que antes (era más común que predijese pocas o ninnguna label para un sample). Otra cosa a destacar es la mejora en las predicciones de las labels A y H que, aunque siguen teniendo un f1 bajo (0.22 y 0.20), en la mayoría de los experimentos anteriores era nulo (sólo en el 10, el label A conseguía un f1 de 0.10).
 
 
