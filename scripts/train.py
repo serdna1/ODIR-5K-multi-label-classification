@@ -13,6 +13,7 @@ from models import create_resnet50_dual
 from engine import train
 from utils import create_writer, compute_loss_weights
 from pytorchtools import EarlyStopping
+from samplers import MultilabelBalancedRandomSampler
 
 def get_args_parser():
     parser = argparse.ArgumentParser(
@@ -63,6 +64,11 @@ def get_args_parser():
         type = int,
         default = 32,
         help = 'Batch size for data loaders (default: 32).'
+    )
+    parser.add_argument(
+        '--use_multilabel_balanced_random_sampler',
+        action = 'store_true',
+        help = 'Use a custom multilabel random sampler that balance the train dataset.'
     )
     parser.add_argument(
         '--num_workers',
@@ -199,15 +205,23 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df, train_transform)
-    val_dataset = ODIRDataset(opt.images_path, val_df, val_transform)
+    train_dataset = ODIRDataset(opt.images_path, train_df[:100], train_transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df[:30], val_transform)
 
+    if opt.use_multilabel_balanced_random_sampler:
+        train_sampler = MultilabelBalancedRandomSampler(
+            train_df.loc[:, ['N','D','G','C','A','H','M','O']].to_numpy(),
+            list(train_df.index),
+            class_choice='least_sampled'
+        )
+    
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
                                   batch_size=opt.batch_size,
+                                  sampler=None if opt.use_multilabel_balanced_random_sampler else train_sampler,
                                   num_workers=opt.num_workers,
                                   pin_memory=True,
-                                  shuffle=True)
+                                  shuffle=None if opt.use_multilabel_balanced_random_sampler else True)
 
     val_dataloader = DataLoader(dataset=val_dataset,
                                 batch_size=opt.batch_size,
