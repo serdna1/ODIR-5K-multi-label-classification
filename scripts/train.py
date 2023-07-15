@@ -205,8 +205,8 @@ if __name__ == '__main__':
     train_df = pd.read_excel(opt.train_annotations_path)
     val_df = pd.read_excel(opt.val_annotations_path)
     
-    train_dataset = ODIRDataset(opt.images_path, train_df[:100], train_transform)
-    val_dataset = ODIRDataset(opt.images_path, val_df[:30], val_transform)
+    train_dataset = ODIRDataset(opt.images_path, train_df, train_transform)
+    val_dataset = ODIRDataset(opt.images_path, val_df, val_transform)
 
     if opt.use_multilabel_balanced_random_sampler:
         train_sampler = MultilabelBalancedRandomSampler(
