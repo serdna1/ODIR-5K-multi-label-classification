@@ -218,7 +218,7 @@ if __name__ == '__main__':
     # Create DataLoaders
     train_dataloader = DataLoader(dataset=train_dataset,
                                   batch_size=opt.batch_size,
-                                  sampler=None if opt.use_multilabel_balanced_random_sampler else train_sampler,
+                                  sampler=train_sampler if opt.use_multilabel_balanced_random_sampler else None,
                                   num_workers=opt.num_workers,
                                   pin_memory=True,
                                   shuffle=None if opt.use_multilabel_balanced_random_sampler else True)
