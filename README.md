@@ -23,7 +23,7 @@ Se usan las mismas métricas que en el challenge: Kappa score, F1, AUC y score f
 Además del dataset, en el challenge se proporciona un [script](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/ODIR_evaluation.py) con un ejemplo de cálculo de estas métricas. Sin embargo, no es muy convencible cómo están calculadas así que se usan unas propias (se pueden ver [aquí](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/metrics.py), en la función compute_challenge_metrics).
 
 ## Tensorboard
-Los entrenamientos se trackean con tensorboard. Cada experimento tiene su propio enlace de TensorBoard.dev, pero [aquí](https://tensorboard.dev/experiment/QxkdWCAeR6ebzvuMlUEZew/) se pueden ver todos juntos.
+Los entrenamientos se trackean con tensorboard. Cada experimento tiene su propio enlace de TensorBoard.dev, pero [aquí](https://tensorboard.dev/experiment/K6AeaZ4jRU6qxAZ8qgc8EQ/) se pueden ver todos juntos.
 
 ## Experimentos
 Cada experimento está contenido en una notebook. Se pueden ejecutar en google colab clicando en el botón 'Open in Colab' arriba a la izquierda, pero no hace falta ya que incluyen los outputs. Todas ellas tienen la misma estructura:
@@ -51,7 +51,7 @@ Cada experimento está contenido en una notebook. Se pueden ejecutar en google c
 ### Experimento 1 (data preprocesing)
 - Dónde: [experiment_1.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_1/experiment_1.ipynb)
 - [Experimento 1 en TensorBoard.dev](https://tensorboard.dev/experiment/2vaHvX1dRCOA1vAr2S1UOA/)
-- Motivación: Se decide no entrenar por más epochs el modelo anterior y se plantea otro entrenamiento con imágenes preprocesadas para tener un único formato de imagen. Se teme que el modelo aprenda los ratios de las mismas así que se plantean dos [transformaciones](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/transforms.py): una para extraer el FOV (cropear los píxeles no negros) y otra para cropear de forma circular la retina (esto hace que quepan las retinas que por defecto no caben en la imagen, a coste de eliminar un trozo del exterior). Se aplican en este orden: FOVExtraction --> CenterCrop --> FOVExtraction --> Resize(224,224). Aquí estan las [imágenes](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/data/images/train_fov_cc_fov_224.zip) preprocesadas.
+- Motivación: Se decide no entrenar por más epochs el modelo anterior y se plantea otro entrenamiento con imágenes preprocesadas para tener un único formato de imagen. Se teme que el modelo aprenda los ratios de las mismas así que se plantean dos [transformaciones](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/transforms.py): una para extraer el FOV (cropear los píxeles no negros) y otra para cropear de forma circular la retina (esto hace que quepan las retinas que por defecto no caben en la imagen, a coste de eliminar un trozo del exterior). Se aplican en este orden: FOVExtraction --> CircleCrop --> FOVExtraction --> Resize(224,224). Aquí estan las [imágenes](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/data/images/train_fov_cc_fov_224.zip) preprocesadas.
 
 ![Alt text](https://res.cloudinary.com/leprechaunotd/image/upload/v1687394572/tfg/data_preprocessing.png)
 
@@ -96,5 +96,11 @@ Cada experimento está contenido en una notebook. Se pueden ejecutar en google c
 - [Experiment 11 en TensorBoard.dev](https://tensorboard.dev/experiment/90EIVEPpTvSEgQmJi4s81g/)
 - Motivación: Pensando que quizás los malos resultados obtenidos hasta ahora se deban al desbalanceo del dataset, se prueba uno de los varios métodos para tratar con este problema: usar una función de loss basada en pesos.
 - Discusión: Se consiguen mejorar los resultados! --> kappa: 0.3487, f1: 0.4866, AUC: 0.7036, score final: 0.5130. Uno de los mejores experimentos era el 3 y tenía peores resultados --> kappa: 0.2814, f1: 0.3762, AUC: 0.7076, score final: 0.4551. Cabe destacar que, mientras que la precisión empeora un poco, el recall mejora mucho. Esto se puede ver en las probabilidades de los resultados cualitativos, se ve que el modelo arriesga más que antes (era más común que predijese pocas o ninnguna label para un sample). Otra cosa a destacar es la mejora en las predicciones de las labels A y H que, aunque siguen teniendo un f1 bajo (0.22 y 0.20), en la mayoría de los experimentos anteriores era nulo (sólo en el 10, el label A conseguía un f1 de 0.10).
+### Experimento 12 (balancear train dataset)
+- Dónde: [experiment_12.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_12/experiment_12.ipynb)
+- [Experiment 12 en TensorBoard.dev](https://tensorboard.dev/experiment/rPBSAFVrSvWNTWLEN13zhg/)
+- Motivación: Este método, al igual que el anterior, también trata el desbalanceo. Balancear datasets multilabel es más complejo que hacerlo para las multiclase, ya que al resamplear una label se puede dar el resampleo de otras al mismo tiempo. En otros poyectos se usa oversampling en las clases minoritarias o undersampling en las mayoritarias, aquí se opta por un [sampler](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/samplers.py) que selecciona la label menos sampleada de manera aleatoria, parando cuando ya se han seleccionado len(dataset) samples (es decir, el tamaño del dataset es el mismo). No se usa la weighted loss del experimento anterior.
+
+- Discusión: Aunque los resultados (kappa: 0.3073, f1: 0.2494, AUC: 0.6713, score final: 0.4093) empeoran bastante con respecto a los mejores hasta ahora, la precisión (0.58) es mayor.
 
 
