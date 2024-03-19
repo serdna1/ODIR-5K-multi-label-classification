@@ -51,14 +51,15 @@ class NCNV2(nn.Module):
         
         return x
 
-def create_resnet50_dual(version=0):
+def create_resnet50_dual(version=0, fine_tune=False):
     # Import a resnet50 from pytorch
     weights = torchvision.models.ResNet50_Weights.DEFAULT
     backbone = torchvision.models.resnet50(weights=weights)
 
-    # Freeze all backbone parameters
-    for param in backbone.parameters():
-        param.requires_grad = False
+    if not fine_tune:
+        # Freeze all backbone parameters
+        for param in backbone.parameters():
+            param.requires_grad = False
         
     # Get the input shape of the fc layer
     classifier_in_shape = backbone.fc.in_features

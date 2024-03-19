@@ -32,6 +32,12 @@ def get_args_parser():
         help = 'Model arquitecture for training (default: resnet50_dual).'
     )
     parser.add_argument(
+        '--fine_tune',
+        type = str,
+        action = 'store_true',
+        help = 'If set dont freeze the backbone weights'
+    )
+    parser.add_argument(
         '--images_path',
         type = str,
         default = '/kaggle/input/odir-size-512/odir-size-512',
@@ -230,11 +236,11 @@ if __name__ == '__main__':
                                 shuffle=False)
     
     if opt.model_name == 'resnet50_dual':
-        model = create_resnet50_dual()
+        model = create_resnet50_dual(fine_tune=opt.fine_tune)
     elif opt.model_name == 'resnet50_dual_v1':
-        model = create_resnet50_dual(version=1)
+        model = create_resnet50_dual(version=1, fine_tune=opt.fine_tune)
     elif opt.model_name == 'resnet50_dual_v2':
-        model = create_resnet50_dual(version=2)
+        model = create_resnet50_dual(version=2, fine_tune=opt.fine_tune)
 
     # Set loss functions
     if opt.use_weighted_loss:
