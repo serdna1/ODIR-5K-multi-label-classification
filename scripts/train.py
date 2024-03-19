@@ -33,7 +33,6 @@ def get_args_parser():
     )
     parser.add_argument(
         '--fine_tune',
-        type = str,
         action = 'store_true',
         help = 'If set dont freeze the backbone weights'
     )
