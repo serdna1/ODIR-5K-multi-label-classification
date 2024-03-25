@@ -18,8 +18,7 @@ class ODIRDataset(Dataset):
         left_img = Image.open(left_image_path)
         right_img = Image.open(right_image_path)
         if self.transform:
-            left_img = self.transform(left_img)
-            right_img = self.transform(right_img)
+            left_img, right_img = self.transform([left_img, right_img])
         
         target = self.df.loc[i, ['N','D','G','C','A','H','M','O']]
         target = target.to_numpy(dtype=np.float32)

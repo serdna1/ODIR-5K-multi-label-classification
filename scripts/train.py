@@ -14,6 +14,7 @@ from engine import train
 from utils import create_writer, compute_loss_weights
 from pytorchtools import EarlyStopping
 from samplers import MultilabelBalancedRandomSampler
+from transforms import RandomHorizontalFlipDual, RandomVerticalFlipDual, RandomRotationDual, ColorJitterDual, ToTensorDual, NormalizeDual, RandomCropDual, CenterCropDual
 
 def get_args_parser():
     parser = argparse.ArgumentParser(
@@ -46,6 +47,12 @@ def get_args_parser():
         '--use_data_augmentation',
         action = 'store_true',
         help = 'If set augment training data.'
+    )
+    parser.add_argument(
+        '--crop_size',
+        type = int,
+        default = 224,
+        help = 'Crop size used in data augmentation. Random crop in train, center crop in validation (default: 224)'
     )
     parser.add_argument(
         '--use_normalization',
@@ -184,10 +191,11 @@ if __name__ == '__main__':
     # Augment data
     if opt.use_data_augmentation:
         augmentations = transforms.Compose([
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomVerticalFlip(p=0.5),
-            transforms.RandomRotation(degrees=30),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)
+            RandomRotationDual(degrees=30),
+            RandomCropDual(size=opt.crop_size),
+            RandomHorizontalFlipDual(p=0.5),
+            RandomVerticalFlipDual(p=0.5),
+            ColorJitterDual(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)
         ])
     else:
         augmentations = nn.Identity()
@@ -195,15 +203,16 @@ if __name__ == '__main__':
     # Create transforms
     train_transform = transforms.Compose([
         augmentations,
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
+        ToTensorDual(),
+        NormalizeDual(mean=[0.485, 0.456, 0.406],
+                      std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
     ])
 
     val_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
+        CenterCropDual(size=opt.crop_size),
+        ToTensorDual(),
+        NormalizeDual(mean=[0.485, 0.456, 0.406],
+                      std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity()
     ])
 
     # Create datasets
