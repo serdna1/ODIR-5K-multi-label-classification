@@ -9,6 +9,7 @@ import pandas as pd
 from datasets import ODIRDataset
 from utils import load_model
 from engine import val_step
+from transforms import ToTensorDual, NormalizeDual, CenterCropDual
 
 def get_args_parser():
     parser = argparse.ArgumentParser(
@@ -31,6 +32,12 @@ def get_args_parser():
         type = str,
         default = '../../data/train_fov_cc_fov_224/',
         help = 'Path of test images (default: ../../data/train_fov_cc_fov_224/).'
+    )
+    parser.add_argument(
+        '--crop_size',
+        type = int,
+        default = 224,
+        help = 'Crop size used for center cropping the test images (default: 224)'
     )
     parser.add_argument(
         '--test_annotations_path',
@@ -82,9 +89,10 @@ if __name__ == '__main__':
     model.to(device)
 
     transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity() # nn.Identity is like not using a transform
+        CenterCropDual(size=opt.crop_size),
+        ToTensorDual(),
+        NormalizeDual(mean=[0.485, 0.456, 0.406],
+                      std=[0.229, 0.224, 0.225]) if opt.use_normalization else nn.Identity() # nn.Identity is like not using a transform
     ])
 
     # Create test dataset

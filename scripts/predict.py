@@ -20,8 +20,7 @@ def pred_and_plot_image(model,
     right_img = Image.open(right_image_path)
     
     if transform:
-        left_img = transform(left_img)
-        right_img = transform(right_img)
+        left_img, right_img = transform([left_img, right_img])
     
     model.to(device)
     
