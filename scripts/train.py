@@ -290,17 +290,20 @@ if __name__ == '__main__':
                            extra = opt.extra)
     
     # Start the training loop
-    _, results = train(model=model,
-                       train_dataloader=train_dataloader,
-                       val_dataloader=val_dataloader,
-                       train_loss_fn=train_loss_fn,
-                       val_loss_fn=val_loss_fn,
-                       optimizer=optimizer,
-                       scheduler=scheduler,
-                       epochs=opt.epochs,
-                       stopper=stopper,
-                       device=device,
-                       writer=writer)
+    final_model, _, results = train(model=model,
+                                    train_dataloader=train_dataloader,
+                                    val_dataloader=val_dataloader,
+                                    train_loss_fn=train_loss_fn,
+                                    val_loss_fn=val_loss_fn,
+                                    optimizer=optimizer,
+                                    scheduler=scheduler,
+                                    epochs=opt.epochs,
+                                    stopper=stopper,
+                                    device=device,
+                                    writer=writer)
+    
+    # Save last model
+    torch.save(final_model.state_dict(), f'./outputs/{opt.model_name}_{opt.experiment_name}_last_model.pth')
     
     # Create a df for the train results and save it to file
     train_results_df = pd.DataFrame(results)

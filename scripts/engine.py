@@ -1,3 +1,4 @@
+import copy
 import torch
 from tqdm.auto import tqdm
 from metrics import compute_challenge_metrics
@@ -179,7 +180,9 @@ def train(model,
             # Update lr for next epoch
             scheduler.step()
 
+    best_model = copy.deepcopy(model)
+    
     # load the last checkpoint with the best model
-    model.load_state_dict(torch.load(stopper.path))
+    best_model.load_state_dict(torch.load(stopper.path))
 
-    return model, results
+    return model, best_model, results
