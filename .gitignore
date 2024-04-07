@@ -3,6 +3,7 @@ data/images/train_224/
 data/images/train_old_roi_64/
 data/images/train_fov_cc_fov_224/
 data/images/train_fov_cc_fov_512/
+data/images/test/
 data/annotations/splits/
 
 experiments/runs/
