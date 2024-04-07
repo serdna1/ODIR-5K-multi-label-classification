@@ -2,13 +2,21 @@ data/images/train/
 data/images/train_224/
 data/images/train_old_roi_64/
 data/images/train_fov_cc_fov_224/
+data/images/train_fov_cc_fov_512.zip
 data/images/train_fov_cc_fov_512/
 data/images/test/
+data/images/test_fov_cc_fov_512.zip
+data/images/test_fov_cc_fov_512/
 data/annotations/splits/
 
 experiments/runs/
 experiments/extra/
 experiments/experiment_*/data
+experiments/experiment_11_dual_resnet_v2/
+experiments/experiment_11_dual_resnet_v2_data_augmentation/
+experiments/experiment_14_without_normalization/
+experiments/experiment_15_lr_0_007/
+experiments/experiment_15_stratifying_splits/
 
 scripts/__pycache__/
 
