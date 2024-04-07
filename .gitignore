@@ -6,6 +6,7 @@ data/images/train_fov_cc_fov_512/
 data/annotations/splits/
 
 experiments/runs/
+experiments/extra/
 experiments/experiment_*/data
 
 scripts/__pycache__/
