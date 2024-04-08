@@ -102,5 +102,28 @@ Cada experimento está contenido en una notebook. Se pueden ejecutar en google c
 - Motivación: Este método, al igual que el anterior, también trata el desbalanceo. Balancear datasets multilabel es más complejo que hacerlo para las multiclase, ya que al resamplear una label se puede dar el resampleo de otras al mismo tiempo. En otros poyectos se usa oversampling en las clases minoritarias o undersampling en las mayoritarias, aquí se opta por un [sampler](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/scripts/samplers.py) que selecciona la label menos sampleada de manera aleatoria, parando cuando ya se han seleccionado len(dataset) samples (es decir, el tamaño del dataset es el mismo). No se usa la weighted loss del experimento anterior.
 
 - Discusión: Aunque los resultados (kappa: 0.3073, f1: 0.2494, AUC: 0.6713, score final: 0.4093) empeoran bastante con respecto a los mejores hasta ahora, la precisión (0.58) es mayor.
+### Experimento 13 (refinar backbone)
+- Dónde: [experiment_13.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_13/experiment_13.ipynb)
+- [Visualizar run con tensorboard (filtrar con '13')](https://colab.research.google.com/github/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/runs.ipynb)
+- Motivación: Pensando que congelar el backbone preentrenado probablemente no fue una buena idea (se estan usando la gran mayoria de pesos con lo aprendido sobre imagenet), se procede a entrenar toda la red y no solo la layer clasificadora.
+
+- Discusión: Los resultados son ligeramente mejores (kappa: 0.3809, f1: 0.5011, AUC: 0.7020, score final: 0.5280) que los mejores hasta ahora. Se observa que la loss de validación diverge claramente mientras que la loss de entrenamiento converge cerca de 0. Esto puede indicar overfitting.
+### Experimento 14 (data augmentation)
+- Dónde: [experiment_14.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_14/experiment_14.ipynb)
+- [Visualizar run con tensorboard (filtrar con '14')](https://colab.research.google.com/github/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/runs.ipynb)
+- Motivación: Previamente se había realizado un experimento usando data augmentation, que es una de las técnicas utilizadas para combatir el overfitting. Sin embargo no dio buenos resultados, puede que porque cada augmentation se aplicaba de forma individual a cada uno de los ojos. Por lo tanto, en este experimento se repiten las mismas transforms utilizadas en aquel experimento (y crop) pero manteniendo la coherencia entre los dos ojos (la implementación de estas transforms se puede encontrar en el script [transforms.py]()):
+    - RandomRotationDual(degrees=30): Esta transformación no cambia, sucede en cada imagen por separado.
+    - RandomCropDual(size=196): Esta es nueva. El crop es diferente para cada una de las dos imágenes. En validación se usa un crop central con el mismo size.
+    - RandomHorizontalFlipDual(p=0.5): Cuando hay flip horizontal, la imagen izquierda y la derecha se intercambian.
+    - RandomVerticalFlipDual(p=0.5): Cuando hay flip vertical, sucede en las dos imágenes al mismo tiempo.
+    - ColorJitterDual(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1): El cambio en el color es el mismo en las dos imágenes.
+
+- Discusión: Los resultados mejoran mucho! (kappa: 0.5191, f1: 0.5845, AUC: 0.7906, score final: 0.6314). La loss de entrenamiento no converge tan cerca de 0 y la loss de validación esta vez converge.
+Sorprendente mejora en AMD, con un f1 de 0.69, que pasa de ser una de las peor clasificadas a una de las mejores (siendo de las minoritarias).
+### Experimentos 15, 16 y 17 (aumentar resolución)
+- Dónde: [experiment_15.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_15/experiment_15.ipynb), [experiment_16.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_16/experiment_16.ipynb), [experiment_17.ipynb](https://github.com/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/experiment_17/experiment_17.ipynb)
+- [Visualizar run con tensorboard (filtrar con '15', '16' o '17')](https://colab.research.google.com/github/serdna1/ODIR-5K-multi-label-classification/blob/main/experiments/runs.ipynb)
+- Motivación: Otra vez se repite uno de los experimentos anteriores pero es que se tiene la sensación de que no haber refinado el backbone limitaba mucho el potencial de mejora. Se aumenta la resolución de 224 a 512, siendo los crops de 448. Cada uno de los tres entrenamientos se realiza con un learning rate diferente (0.01, 0.1 y 0.001). Cabe destacar que, debido a un límite de memoria en google colab, se tuvo que reducir el batch size de 32 a 16. También se aumenta la paciencia de 20 a 30.
+- Discusión: Para lr=0.01 los resultados mejoran mucho! (kappa: 0.6014, f1: 0.6586, AUC: 0.8489, score final: 0.7030). Con este lr la red converje rápido (early stopping en la epoch 44), con los otros dos se alcanza el límite de 100 epochs (sigue bajando el loss).
 
 
